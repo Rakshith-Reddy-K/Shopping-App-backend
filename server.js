@@ -21,17 +21,16 @@ db.serialize(() => {
             });
             stmt.finalize();
         });
-        db.run("CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY,FOREIGN KEY (productId) REFERENCES products(id),comment TEXT,like INTEGER")
-        db.run("CREATE TABLE IF NOT EXISTS follows (id INTEGER PRIMARY KEY,FOREIGN KEY (sellerId) REFERENCES user(Id),FOREIGN KEY (userId) REFERENCES user(Id)")
-        db.run("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, username TEXT, password TEXT, isActive BOOLEAN,role INTEGER)");
-        db.run("INSERT INTO user (username, password, isActive) VALUES ('dummyuser', 'dummypassword', 1)");
+       // db.run("CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY,comment TEXT,like INTEGER productId INTEGER,FOREIGN KEY (productId) REFERENCES products(id)")
+       // db.run("CREATE TABLE IF NOT EXISTS follows (id INTEGER PRIMARY KEY,sellerId INTEGER,userId INTEGER,FOREIGN KEY (sellerId) REFERENCES user(Id),FOREIGN KEY (userId) REFERENCES user(Id)")
+        db.run("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, username TEXT, password TEXT, isActive BOOLEAN)");
         db.run("CREATE TABLE IF NOT EXISTS cart (id INTEGER PRIMARY KEY, userId INTEGER, productId INTEGER, FOREIGN KEY (userId) REFERENCES user(id), FOREIGN KEY (productId) REFERENCES products(id))");
 
 });
 
 
 
-const PORT = 3001;
+const PORT = 3002;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
@@ -48,8 +47,8 @@ app.get('/products', (req, res) => {
 
     
     app.post('/users', (req, res) => {
-        const { username, password } = req.body;
-        db.run("INSERT INTO user (username, password, isActive) VALUES (?, ?, false)", [username, password], function(err) {
+        const { username, password ,role} = req.body;
+        db.run("INSERT INTO user (username, password, isActive) VALUES (?, ?, false,role)", [username, password], function(err) {
             if (err) {
                 res.status(400).send(err.message);
                 return;
