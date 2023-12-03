@@ -25,7 +25,6 @@ db.serialize(() => {
         db.run("CREATE TABLE IF NOT EXISTS follows (id INTEGER PRIMARY KEY,FOREIGN KEY (sellerId) REFERENCES user(Id),FOREIGN KEY (userId) REFERENCES user(Id)")
         db.run("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, username TEXT, password TEXT, isActive BOOLEAN,role INTEGER)");
         db.run("INSERT INTO user (username, password, isActive) VALUES ('dummyuser', 'dummypassword', 1)");
-
         db.run("CREATE TABLE IF NOT EXISTS cart (id INTEGER PRIMARY KEY, userId INTEGER, productId INTEGER, FOREIGN KEY (userId) REFERENCES user(id), FOREIGN KEY (productId) REFERENCES products(id))");
 
 });
