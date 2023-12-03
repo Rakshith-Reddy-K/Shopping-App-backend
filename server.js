@@ -21,8 +21,9 @@ db.serialize(() => {
             });
             stmt.finalize();
         });
-        
-        db.run("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, username TEXT, password TEXT, isActive BOOLEAN)");
+        db.run("CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY,FOREIGN KEY (productId) REFERENCES products(id),comment TEXT,like INTEGER")
+        db.run("CREATE TABLE IF NOT EXISTS follows (id INTEGER PRIMARY KEY,FOREIGN KEY (sellerId) REFERENCES user(Id),FOREIGN KEY (userId) REFERENCES user(Id)")
+        db.run("CREATE TABLE IF NOT EXISTS user (id INTEGER PRIMARY KEY, username TEXT, password TEXT, isActive BOOLEAN,role INTEGER)");
         db.run("INSERT INTO user (username, password, isActive) VALUES ('dummyuser', 'dummypassword', 1)");
 
         db.run("CREATE TABLE IF NOT EXISTS cart (id INTEGER PRIMARY KEY, userId INTEGER, productId INTEGER, FOREIGN KEY (userId) REFERENCES user(id), FOREIGN KEY (productId) REFERENCES products(id))");
@@ -35,7 +36,6 @@ const PORT = 3001;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
-// In your backend server.js
 
 app.get('/products', (req, res) => {
     let query = "SELECT * FROM products";
