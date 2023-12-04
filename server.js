@@ -28,7 +28,7 @@ const initializeTables = async () => {
 };
 
 // Call the function to initialize tables
-initializeTables();
+//initializeTables();
 // CRUD operations for 'products' table
 app.post('/products', async (req, res) => {
     const { title, price, description, category, image, rate, count } = req.body;
