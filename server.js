@@ -110,6 +110,13 @@ app.get('/users/:id', async (req, res) => {
     res.status(200).json(result.rows[0]);
 });
 
+app.post('/users', async (req, res) => {
+    const { username, password, is_active } = req.body;
+    const result = await pool.query('INSERT INTO users (username, password, is_active) VALUES ($1, $2, $3) RETURNING *',
+        [username, password, is_active]);
+    res.status(201).json(result.rows[0]);
+});
+
 // Similar CRUD operations for 'users', 'cart', 'comments', and 'follows' tables
 // ...
 
