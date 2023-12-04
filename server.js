@@ -11,7 +11,8 @@ app.use(bodyParser.json());
 
 // PostgreSQL connection setup
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
+    connectionString: "postgres://mylocaluser:mylocalpassword@localhost:5432/mylocaldb"
+    //process.env.DATABASE_URL,
     
 });
 const initializeTables = async () => {
