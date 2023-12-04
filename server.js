@@ -75,6 +75,11 @@ app.delete('/products/:id', async (req, res) => {
     res.status(200).send(`Product deleted with ID: ${id}`);
 });
 
+app.get('/comments', async (req, res) => {
+    const result = await pool.query('SELECT * FROM comments');
+    res.status(200).json(result.rows);
+});
+
 app.get('/products/:id/comments', async (req, res) => {
     const id = parseInt(req.params.id);
     const result = await pool.query('SELECT * FROM comments WHERE product_id = $1', [id]);
@@ -125,6 +130,9 @@ app.post('/users', async (req, res) => {
         [username, password, is_active]);
     res.status(201).json(result.rows[0]);
 });
+
+
+
 
 // Similar CRUD operations for 'users', 'cart', 'comments', and 'follows' tables
 // ...
