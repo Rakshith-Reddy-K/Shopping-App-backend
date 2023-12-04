@@ -74,6 +74,20 @@ app.delete('/products/:id', async (req, res) => {
     res.status(200).send(`Product deleted with ID: ${id}`);
 });
 
+app.get('/products/:id/comments', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const result = await pool.query('SELECT * FROM comments WHERE product_id = $1', [id]);
+    res.status(200).json(result.rows);
+});
+
+app.post('/products/:id/comments', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const { comment } = req.body;
+    const result = await pool.query('INSERT INTO comments (comment, likes, product_id) VALUES ($1, $2, $3) RETURNING *',
+        [comment, 0, id]);
+    res.status(201).json(result.rows[0]);
+});
+
 // Similar CRUD operations for 'users', 'cart', 'comments', and 'follows' tables
 // ...
 
