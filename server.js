@@ -21,7 +21,7 @@ const initializeTables = async () => {
         await pool.query("CREATE TABLE IF NOT EXISTS products (id SERIAL PRIMARY KEY, title TEXT, price REAL, description TEXT, category TEXT, image TEXT, rate REAL, count INT)");
         await pool.query("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username TEXT, password TEXT, is_active BOOLEAN)");
         await pool.query("CREATE TABLE IF NOT EXISTS cart (id SERIAL PRIMARY KEY, user_id INTEGER REFERENCES users(id), product_id INTEGER REFERENCES products(id))");
-        await pool.query("CREATE TABLE IF NOT EXISTS comments (id SERIAL PRIMARY KEY, comment TEXT, likes INTEGER, product_id INTEGER REFERENCES products(id))");
+        await pool.query("CREATE TABLE IF NOT EXISTS comments (id SERIAL PRIMARY KEY, comment TEXT, likes INTEGER, product_id INTEGER REFERENCES products(id), user_id INTEGER REFERENCES users(id))");
         await pool.query("CREATE TABLE IF NOT EXISTS follows (id SERIAL PRIMARY KEY, seller_id INTEGER REFERENCES users(id), user_id INTEGER REFERENCES users(id))");
     } catch (error) {
         console.error('Error initializing database tables:', error);
@@ -83,8 +83,9 @@ app.get('/products/:id/comments', async (req, res) => {
 app.post('/products/:id/comments', async (req, res) => {
     const id = parseInt(req.params.id);
     const { comment } = req.body;
-    const result = await pool.query('INSERT INTO comments (comment, likes, product_id) VALUES ($1, $2, $3) RETURNING *',
-        [comment, 0, id]);
+    const { user_id } = req.body;
+    const result = await pool.query('INSERT INTO comments (comment, likes, product_id, user_id) VALUES ($1, $2, $3, $4) RETURNING *',
+        [comment, 0, id, user_id]);
     res.status(201).json(result.rows[0]);
 });
 
