@@ -131,6 +131,26 @@ app.post('/users', async (req, res) => {
     res.status(201).json(result.rows[0]);
 });
 
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const userResult = await pool.query('SELECT password FROM users WHERE username = $1', [username]);
+        if (userResult.rows.length > 0) {
+            const user = userResult.rows[0];
+            if (user.password === password) {
+                res.status(200).send('Login successful');
+            } else {
+                res.status(403).send('Forbidden: Incorrect password');
+            }
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        console.error('Error during login:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 
 
