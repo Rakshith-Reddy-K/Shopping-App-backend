@@ -4,6 +4,7 @@ const express = require('express');
 const { Pool } = require('pg');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const { is } = require('css-select');
 
 const app = express();
 app.use(cors());
@@ -118,7 +119,8 @@ app.get('/users/:id', async (req, res) => {
 });
 
 app.post('/users', async (req, res) => {
-    const { username, password, is_active } = req.body;
+    const { username, password } = req.body;
+    const is_active = false;
     const result = await pool.query('INSERT INTO users (username, password, is_active) VALUES ($1, $2, $3) RETURNING *',
         [username, password, is_active]);
     res.status(201).json(result.rows[0]);
