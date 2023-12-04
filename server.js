@@ -38,6 +38,22 @@ app.post('/products', async (req, res) => {
     res.status(201).json(result.rows[0]);
 });
 
+app.get('/products/:id', async (req, res) => {
+    const id = parseInt(req.params.id); // Extracting the ID from the request parameters
+
+    try {
+        const result = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+        if (result.rows.length > 0) {
+            res.status(200).json(result.rows[0]);
+        } else {
+            res.status(404).send('Product not found');
+        }
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 app.get('/products', async (req, res) => {
     const result = await pool.query('SELECT * FROM products');
     res.status(200).json(result.rows);
