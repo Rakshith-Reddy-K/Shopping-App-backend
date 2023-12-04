@@ -89,6 +89,13 @@ app.post('/products/:id/comments', async (req, res) => {
     res.status(201).json(result.rows[0]);
 });
 
+app.delete('/products/:id/comments/:commentId', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const commentId = parseInt(req.params.commentId);
+    await pool.query('DELETE FROM comments WHERE id = $1 AND product_id = $2', [commentId, id]);
+    res.status(200).send(`Comment deleted with ID: ${commentId}`);
+});
+
 app.put('/products/:id/comments/:commentId', async (req, res) => {
     const id = parseInt(req.params.id);
     const commentId = parseInt(req.params.commentId);
