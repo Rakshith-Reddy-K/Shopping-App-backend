@@ -11,9 +11,10 @@ app.use(bodyParser.json());
 
 // PostgreSQL connection setup
 const pool = new Pool({
-    connectionString: "postgres://mylocaluser:mylocalpassword@localhost:5432/mylocaldb"
-    //process.env.DATABASE_URL,
-    
+    connectionString: process.env.DATABASE_URL, // Heroku provides DATABASE_URL
+    ssl: {
+        rejectUnauthorized: false // Necessary for connections on Heroku's free tier
+    }
 });
 const initializeTables = async () => {
     try {
