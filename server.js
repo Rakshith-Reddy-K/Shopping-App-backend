@@ -99,7 +99,12 @@ app.put('/products/:id/comments/:commentId', async (req, res) => {
     res.status(200).json(result.rows[0]);
 });
 
-app.get('users/:id', async (req, res) => {
+app.get('/users', async (req, res) => {
+    const result = await pool.query('SELECT * FROM users');
+    res.status(200).json(result.rows);
+});
+
+app.get('/users/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
     res.status(200).json(result.rows[0]);
