@@ -131,7 +131,50 @@ app.post('/users', async (req, res) => {
     res.status(201).json(result.rows[0]);
 });
 
+app.post('/login', async (req, res) => {
+    const { username, password } = req.body;
 
+    try {
+        const userResult = await pool.query('SELECT password FROM users WHERE username = $1', [username]);
+        if (userResult.rows.length > 0) {
+            const user = userResult.rows[0];
+            if (user.password === password) {
+                res.status(200).send('Login successful');
+            } else {
+                res.status(403).send('Forbidden: Incorrect password');
+            }
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        console.error('Error during login:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.post('/register', async (req, res) => {
+    const { username, password, email, mobilenum } = req.body;
+    const isActive = true;  // Assuming new users are active by default
+    const role = 1;        // Default role
+
+    try {
+        // Check if username or email already exists
+        const checkUser = await pool.query('SELECT * FROM users WHERE username = $1 OR email = $2', [username, email]);
+        if (checkUser.rows.length > 0) {
+            return res.status(409).send('Username or email already exists');
+        }
+
+        // Insert new user
+        const newUser = await pool.query(
+            'INSERT INTO users (username, password, email, is_active, mobilenum, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [username, password, email, isActive, mobilenum, role]
+        );
+        res.status(201).json(newUser.rows[0]);
+    } catch (error) {
+        console.error('Error during registration:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 
 // Similar CRUD operations for 'users', 'cart', 'comments', and 'follows' tables
