@@ -158,7 +158,7 @@ app.post('/register', async (req, res) => {
 
         // Insert new user
         const newUser = await pool.query(
-            'INSERT INTO users (username, password, email, is_active, mobilenum, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            'INSERT INTO users (username, password, email, isactive, mobilenum, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
             [username, password, email, isActive, mobilenum, role]
         );
         res.status(201).json(newUser.rows[0]);
@@ -175,7 +175,7 @@ app.post('/users', async (req, res) => {
     const { username, password, is_active, mobilenum, role } = req.body;
     try {
         const newUser = await pool.query(
-            'INSERT INTO users (username, password, is_active, mobilenum, role) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            'INSERT INTO users (username, password, isactive, mobilenum, role) VALUES ($1, $2, $3, $4, $5) RETURNING *',
             [username, password, is_active, mobilenum, role]
         );
         res.status(201).json(newUser.rows[0]);
