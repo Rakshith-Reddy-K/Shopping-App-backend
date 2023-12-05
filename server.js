@@ -90,6 +90,7 @@ app.post('/products/:id/comments', async (req, res) => {
     const id = parseInt(req.params.id);
     const { comment } = req.body;
     const { user_id } = req.body;
+    console.log("product_id: " + id + "comment: " + comment + "user_id: " + user_id);
     const result = await pool.query('INSERT INTO comments (comment, likes, product_id, user_id) VALUES ($1, $2, $3, $4) RETURNING *',
         [comment, 0, id, user_id]);
     res.status(201).json(result.rows[0]);
