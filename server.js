@@ -123,14 +123,6 @@ app.get('/users/:id', async (req, res) => {
     res.status(200).json(result.rows[0]);
 });
 
-app.post('/users', async (req, res) => {
-    const { username, password } = req.body;
-    const is_active = false;
-    const result = await pool.query('INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *',
-        [username, password]);
-    res.status(201).json(result.rows[0]);
-});
-
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
