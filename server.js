@@ -178,8 +178,75 @@ app.post('/register', async (req, res) => {
 
 
 // Similar CRUD operations for 'users', 'cart', 'comments', and 'follows' tables
-// ...
+// Create (Add) a New User
+app.post('/users', async (req, res) => {
+    const { username, password, is_active, mobilenum, role } = req.body;
+    try {
+        const newUser = await pool.query(
+            'INSERT INTO users (username, password, is_active, mobilenum, role) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [username, password, is_active, mobilenum, role]
+        );
+        res.status(201).json(newUser.rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error creating new user');
+    }
+});
 
+// Read (Get) All Users
+app.get('/users', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM users');
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error retrieving users');
+    }
+});
+
+// Read (Get) a Single User by ID
+app.get('/users/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    try {
+        const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+        if (result.rows.length > 0) {
+            res.status(200).json(result.rows[0]);
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error retrieving user');
+    }
+});
+
+// Update a User
+app.put('/users/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    const { username, password, is_active, mobilenum, role } = req.body;
+    try {
+        const updatedUser = await pool.query(
+            'UPDATE users SET username = $1, password = $2, is_active = $3, mobilenum = $4, role = $5 WHERE id = $6 RETURNING *',
+            [username, password, is_active, mobilenum, role, id]
+        );
+        res.status(200).json(updatedUser.rows[0]);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error updating user');
+    }
+});
+
+// Delete a User
+app.delete('/users/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    try {
+        await pool.query('DELETE FROM users WHERE id = $1', [id]);
+        res.status(200).send(`User deleted with ID: ${id}`);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error deleting user');
+    }
+});
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
