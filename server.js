@@ -122,7 +122,6 @@ app.post('/products/:id/comments', async (req, res) => {
         console.error('Error during posting comment:', error);
         res.status(500).send('Internal Server Error');
     }
-
 });
 
 app.delete('/products/:id/comments/:commentId', async (req, res) => {
@@ -130,6 +129,18 @@ app.delete('/products/:id/comments/:commentId', async (req, res) => {
     const commentId = parseInt(req.params.commentId);
     await pool.query('DELETE FROM comments WHERE id = $1 AND product_id = $2', [commentId, id]);
     res.status(200).send(`Comment deleted with ID: ${commentId}`);
+});
+
+app.post('/cart', async (req, res) => {
+    const { user_id, product_id } = req.body;
+    try {
+        const result = await pool.query('INSERT INTO cart (user_id, product_id) VALUES ($1, $2) RETURNING *',
+            [user_id, product_id]);
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        console.error('Error during posting comment:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 app.get('/users', async (req, res) => {
