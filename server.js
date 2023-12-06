@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 
 // PostgreSQL connection setup
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL, // Heroku provides DATABASE_URL
+    connectionString: process.env.HEROKU_POSTGRESQL_YELLOW_URL, // Heroku provides DATABASE_URL
     ssl: {
         rejectUnauthorized: false // Necessary for connections on Heroku's free tier
     }
@@ -20,7 +20,7 @@ const pool = new Pool({
 const initializeTables = async () => {
     try {
         await pool.query("CREATE TABLE IF NOT EXISTS products (id SERIAL PRIMARY KEY, title TEXT, price REAL, description TEXT, category TEXT, image TEXT, rate REAL, count INT)");
-        await pool.query("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username TEXT, password TEXT, is_active BOOLEAN)");
+        await pool.query("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username TEXT, password TEXT, isactive BOOLEAN)");
         await pool.query("CREATE TABLE IF NOT EXISTS cart (id SERIAL PRIMARY KEY, user_id INTEGER REFERENCES users(id), product_id INTEGER REFERENCES products(id))");
         await pool.query("CREATE TABLE IF NOT EXISTS comments (id SERIAL PRIMARY KEY, comment TEXT, likes INTEGER, product_id INTEGER REFERENCES products(id), user_id INTEGER REFERENCES users(id))");
         await pool.query("CREATE TABLE IF NOT EXISTS follows (id SERIAL PRIMARY KEY, seller_id INTEGER REFERENCES users(id), user_id INTEGER REFERENCES users(id))");
@@ -165,7 +165,7 @@ app.post('/register', async (req, res) => {
 
         // Insert new user
         const newUser = await pool.query(
-            'INSERT INTO users (username, password, email, isactive, mobilenum, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            'INSERT INTO users (username, password, email, isactive, mobilenum, role,name,description) VALUES ($1, $2, $3, $4, $5, $6,$1,$1) RETURNING *',
             [username, password, email, isActive, mobilenum, role]
         );
         res.status(201).json(newUser.rows[0]);
@@ -175,6 +175,29 @@ app.post('/register', async (req, res) => {
     }
 });
 
+app.post('/registerseller', async (req, res) => {
+    const { username, password, email, mobilenum ,description} = req.body;
+    const isActive = true;  // Assuming new users are active by default
+    const role = 2;        // Default role
+
+    try {
+        // Check if username or email already exists
+        const checkUser = await pool.query('SELECT * FROM users WHERE username = $1 OR email = $2', [username, email]);
+        if (checkUser.rows.length > 0) {
+            return res.status(409).send('Username or email already exists');
+        }
+
+        // Insert new user
+        const newUser = await pool.query(
+            'INSERT INTO users (username, password, email, isactive, mobilenum, role,name,description) VALUES ($1, $2, $3, $4, $5, $6,$1,$1) RETURNING *',
+            [username, password, email, isActive, mobilenum, role,description]
+        );
+        res.status(201).json(newUser.rows[0]);
+    } catch (error) {
+        console.error('Error during registration:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
 
 // Similar CRUD operations for 'users', 'cart', 'comments', and 'follows' tables
 // Create (Add) a New User
