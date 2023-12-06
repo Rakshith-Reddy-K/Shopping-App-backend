@@ -154,17 +154,6 @@ app.delete('/cart/:id', async (req, res) => {
     res.status(200).send(`Cart deleted with ID: ${id}`);
 });
 
-app.get('/users', async (req, res) => {
-    const result = await pool.query('SELECT * FROM users');
-    res.status(200).json(result.rows);
-});
-
-app.get('/users/:id', async (req, res) => {
-    const id = parseInt(req.params.id);
-    const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-    res.status(200).json(result.rows[0]);
-});
-
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
@@ -253,7 +242,19 @@ app.post('/users', async (req, res) => {
 // Read (Get) All Users
 app.get('/users', async (req, res) => {
     try {
-        const result = await pool.query('SELECT * FROM users');
+        let type = req.query.type
+        let role = null;
+        if(type === "seller") {
+            role = 2
+        } else if (type === "buyer") {
+            role = 1;
+        }
+        let result;
+        if(role) {
+            result = await pool.query('SELECT * FROM users WHERE role = $1',[role]);
+        } else {
+            result = await pool.query('SELECT * FROM users');
+        }
         res.status(200).json(result.rows);
     } catch (error) {
         console.error(error);
