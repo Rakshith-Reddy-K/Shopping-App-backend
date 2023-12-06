@@ -132,22 +132,6 @@ app.delete('/products/:id/comments/:commentId', async (req, res) => {
     res.status(200).send(`Comment deleted with ID: ${commentId}`);
 });
 
-app.put('/products/:productId/comments/:commentId/like', async (req, res) => {
-    const commentId = parseInt(req.params.commentId);
-    await pool.query(
-        'UPDATE comments SET likes = likes + 1 WHERE id = $1', [commentId]
-    );
-    res.status(200).send(`Comment liked with ID: ${commentId}`);
-});
-
-app.put('/products/:productId/comments/:commentId/unlike', async (req, res) => {
-    const commentId = parseInt(req.params.commentId);
-    await pool.query(
-        'UPDATE comments SET likes = likes - 1 WHERE id = $1', [commentId]
-    );
-    res.status(200).send(`Comment unliked with ID: ${commentId}`);
-});
-
 app.get('/users', async (req, res) => {
     const result = await pool.query('SELECT * FROM users');
     res.status(200).json(result.rows);
