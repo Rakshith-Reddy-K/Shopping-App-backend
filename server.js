@@ -277,6 +277,21 @@ app.get('/users/:id', async (req, res) => {
         res.status(500).send('Error retrieving user');
     }
 });
+//Get User by username
+app.get('/userid', async (req, res) => {
+    const searchTerm = req.query.username;
+    try {
+        const result = await pool.query('SELECT * FROM users WHERE username = $1', [searchTerm]);
+        if (result.rows.length > 0) {
+            res.status(200).json(result.rows[0]);
+        } else {
+            res.status(404).send('User not found');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error retrieving user');
+    }
+});
 
 // Update a User
 app.put('/users/:id', async (req, res) => {
