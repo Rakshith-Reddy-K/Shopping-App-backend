@@ -176,7 +176,7 @@ app.post('/register', async (req, res) => {
 });
 
 app.post('/registerseller', async (req, res) => {
-    const { username, password, email, mobilenum ,description} = req.body;
+    const { username,name, password, email, mobilenum ,description} = req.body;
     const isActive = true;  // Assuming new users are active by default
     const role = 2;        // Default role
 
@@ -189,8 +189,8 @@ app.post('/registerseller', async (req, res) => {
 
         // Insert new user
         const newUser = await pool.query(
-            'INSERT INTO users (username, password, email, isactive, mobilenum, role,name,description) VALUES ($1, $2, $3, $4, $5, $6,$1,$1) RETURNING *',
-            [username, password, email, isActive, mobilenum, role,description]
+            'INSERT INTO users (username, password, email, isactive, mobilenum, role,name,description) VALUES ($1, $2, $3, $4, $5, $6,$8,$7) RETURNING *',
+            [username, password, email, isActive, mobilenum, role,description,name]
         );
         res.status(201).json(newUser.rows[0]);
     } catch (error) {
