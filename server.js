@@ -56,8 +56,31 @@ app.get('/products/:id', async (req, res) => {
 });
 
 app.get('/products', async (req, res) => {
-    const result = await pool.query('SELECT * FROM products');
-    res.status(200).json(result.rows);
+    const searchTerm = req.query.search;
+
+    try {
+        let query;
+        let values;
+
+        if (searchTerm) {
+            // SQL query when there is a search term
+            query = `
+                SELECT * FROM products 
+                WHERE title ILIKE $1 OR description ILIKE $1
+            `;
+            values = [`%${searchTerm}%`]; // Using ILIKE for case-insensitive search
+        } else {
+            // SQL query when there is no search term (return all products)
+            query = `SELECT * FROM products`;
+            values = [];
+        }
+
+        const result = await pool.query(query, values);
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 app.put('/products/:id', async (req, res) => {
