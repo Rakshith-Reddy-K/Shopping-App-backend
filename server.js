@@ -143,6 +143,11 @@ app.post('/cart', async (req, res) => {
     }
 });
 
+app.get('/cart', async (req, res) => {
+    const result = await pool.query('SELECT * FROM cart');
+    res.status(200).json(result.rows);
+});
+
 app.get('/users', async (req, res) => {
     const result = await pool.query('SELECT * FROM users');
     res.status(200).json(result.rows);
