@@ -132,14 +132,20 @@ app.delete('/products/:id/comments/:commentId', async (req, res) => {
     res.status(200).send(`Comment deleted with ID: ${commentId}`);
 });
 
-app.put('/products/:id/comments/:commentId', async (req, res) => {
-    const id = parseInt(req.params.id);
+app.put('/products/:productId/comments/:commentId/like', async (req, res) => {
     const commentId = parseInt(req.params.commentId);
-    const { likes } = req.body;
-    const result = await pool.query(
-        'UPDATE comments SET likes = $1 WHERE id = $2 AND product_id = $3 RETURNING *',
-        [likes, commentId, id]);
-    res.status(200).json(result.rows[0]);
+    await pool.query(
+        'UPDATE comments SET likes = likes + 1 WHERE id = $1', [commentId]
+    );
+    res.status(200).send(`Comment liked with ID: ${commentId}`);
+});
+
+app.put('/products/:productId/comments/:commentId/unlike', async (req, res) => {
+    const commentId = parseInt(req.params.commentId);
+    await pool.query(
+        'UPDATE comments SET likes = likes - 1 WHERE id = $1', [commentId]
+    );
+    res.status(200).send(`Comment unliked with ID: ${commentId}`);
 });
 
 app.get('/users', async (req, res) => {
