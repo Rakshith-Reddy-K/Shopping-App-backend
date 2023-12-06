@@ -148,6 +148,12 @@ app.get('/cart', async (req, res) => {
     res.status(200).json(result.rows);
 });
 
+app.delete('/cart/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    await pool.query('DELETE FROM cart WHERE id = $1', [id]);
+    res.status(200).send(`Cart deleted with ID: ${id}`);
+});
+
 app.get('/users', async (req, res) => {
     const result = await pool.query('SELECT * FROM users');
     res.status(200).json(result.rows);
