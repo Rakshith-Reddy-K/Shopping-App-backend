@@ -281,11 +281,11 @@ app.get('/users/:id', async (req, res) => {
 // Update a User
 app.put('/users/:id', async (req, res) => {
     const id = parseInt(req.params.id);
-    const { username, password, is_active, mobilenum, role } = req.body;
+    const { username, password, is_active, mobilenum, name } = req.body;
     try {
         const updatedUser = await pool.query(
-            'UPDATE users SET username = $1, password = $2, is_active = $3, mobilenum = $4, role = $5 WHERE id = $6 RETURNING *',
-            [username, password, is_active, mobilenum, role, id]
+            'UPDATE users SET username = $1, password = $2, isactive = $3, mobilenum = $4, name = $5 WHERE id = $6 RETURNING *',
+            [username, password, is_active, mobilenum, name, id]
         );
         res.status(200).json(updatedUser.rows[0]);
     } catch (error) {
