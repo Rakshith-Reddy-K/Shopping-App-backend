@@ -341,10 +341,10 @@ app.get('/follows', async (req, res) => {
     let finalId = null;
     let query = null;
     if(sellerId!=null) {
-        query = "SELECT user_id FROM follows WHERE seller_id = $1";
+        query = "SELECT count(user_id) FROM follows WHERE seller_id = $1";
         finalId = sellerId;
     } else  {
-        query = "SELECT seller_id FROM follows WHERE user_id = $1"
+        query = "SELECT count(seller_id) FROM follows WHERE user_id = $1"
         finalId = userId;
     }
     try {
