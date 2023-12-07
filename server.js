@@ -368,12 +368,12 @@ app.get('/follows/:sellerId', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
-app.get('/follows/:userId', async (req, res) => {
+app.get('/follows/:userId/:sellerId', async (req, res) => {
     const userId = parseInt(req.params.userId);
+    const sellerId = parseInt(req.params.sellerId);
     try {
-        const result = await pool.query('SELECT user_id FROM follows WHERE user_id = $1', [userId]);
-        const userIds = result.rows.map(row => row.user_id);
-        res.status(200).json(userIds);
+        const result = await pool.query('SELECT user_id FROM follows WHERE user_id = $1 AND seller_id = $2', [userId,sellerId]);
+        res.status(200).json(result);
     } catch (error) {
         console.error('Error retrieving followers for seller:', error);
         res.status(500).send('Internal Server Error');
