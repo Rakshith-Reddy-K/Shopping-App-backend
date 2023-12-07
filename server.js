@@ -373,6 +373,11 @@ app.get('/follows/:userId/:sellerId', async (req, res) => {
     const sellerId = parseInt(req.params.sellerId);
     try {
         const result = await pool.query('SELECT user_id FROM follows WHERE user_id = $1 AND seller_id = $2', [userId,sellerId]);
+        if (result.rows.length > 0) {
+            res.status(200).json(result.rows[0]);
+        } else {
+            res.status(200).json({});
+        }
         res.status(200).json(result);
     } catch (error) {
         console.error('Error retrieving followers for seller:', error);
