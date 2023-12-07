@@ -336,8 +336,19 @@ app.post('/follows', async (req, res) => {
 });
 //Read follows
 app.get('/follows', async (req, res) => {
+    let sellerId = req.query.sellerId
+    let userId = req.query.userId
+    finalId = null;
+    let query = null;
+    if(sellerId!=null) {
+        query = "SELECT user_id FROM follows WHERE seller_id = $1";
+        finalId = sellerId;
+    } else  {
+        query = "SELECT seller_id FROM follows WHERE user_id = $1"
+        finalId = userId;
+    }
     try {
-        const result = await pool.query('SELECT * FROM follows');
+        const result = await pool.query(query, [finalId]);
         res.status(200).json(result.rows);
     } catch (error) {
         console.error('Error retrieving follow records:', error);
@@ -346,7 +357,7 @@ app.get('/follows', async (req, res) => {
 });
 
 //get seler userids
-app.get('/follows/:sellerId', async (req, res) => {
+app.get('/follows/seller/:sellerId', async (req, res) => {
     const sellerId = parseInt(req.params.sellerId);
     try {
         const result = await pool.query('SELECT user_id FROM follows WHERE seller_id = $1', [sellerId]);
@@ -360,7 +371,7 @@ app.get('/follows/:sellerId', async (req, res) => {
 app.get('/follows/:userId', async (req, res) => {
     const userId = parseInt(req.params.userId);
     try {
-        const result = await pool.query('SELECT user_id FROM follows WHERE usee_id = $1', [userId]);
+        const result = await pool.query('SELECT user_id FROM follows WHERE user_id = $1', [userId]);
         const userIds = result.rows.map(row => row.user_id);
         res.status(200).json(userIds);
     } catch (error) {
