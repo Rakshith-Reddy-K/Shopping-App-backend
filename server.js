@@ -213,13 +213,8 @@ app.post('/registerseller', async (req, res) => {
 
         // Insert new user
         const newUser = await pool.query(
-<<<<<<< HEAD
             'INSERT INTO users (username, password, email, isactive, mobilenum, role, name, description) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
             [username, password, email, isActive, mobilenum, role, name, description]
-=======
-            'INSERT INTO users (username, password, email, isactive, mobilenum, role,description,name) VALUES ($1, $2, $3, $4, $5, $6,$8,$7) RETURNING *',
-            [username, password, email, isActive, mobilenum, role,description,name]
->>>>>>> 8442934402929c42f7cc9e3ff237374474914db3
         );
         res.status(201).json(newUser.rows[0]);
     } catch (error) {
