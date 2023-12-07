@@ -328,7 +328,7 @@ app.post('/follows', async (req, res) => {
             'INSERT INTO follows (seller_id, user_id) VALUES ($1, $2) RETURNING *',
             [sellerId, userId]
         );
-        res.status(201).json(newFollow.rows[0]);
+        return res.status(201).json(newFollow.rows[0]);
     } catch (error) {
         console.error('Error adding follow record:', error);
         res.status(500).send('Internal Server Error');
@@ -386,10 +386,11 @@ app.get('/follows/:userId/:sellerId', async (req, res) => {
 });
 
 
-app.delete('/follows/:id', async (req, res) => {
-    const id = parseInt(req.params.id);
+app.delete('/follows/:userId/:sellerId', async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    const sellerId = parseInt(req.params.sellerId);
     try {
-        await pool.query('DELETE FROM follows WHERE id = $1', [id]);
+        await pool.query('DELETE FROM follows WHERE user_id = $1 AND seller_id = $2', [userId,sellerId]);
         res.status(200).send(`Follow record deleted with ID: ${id}`);
     } catch (error) {
         console.error('Error deleting follow record:', error);
