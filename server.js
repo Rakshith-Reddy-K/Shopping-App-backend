@@ -357,7 +357,7 @@ app.get('/follows', async (req, res) => {
 });
 
 //get seler userids
-app.get('/follows/seller/:sellerId', async (req, res) => {
+app.get('/follows/:sellerId', async (req, res) => {
     const sellerId = parseInt(req.params.sellerId);
     try {
         const result = await pool.query('SELECT user_id FROM follows WHERE seller_id = $1', [sellerId]);
