@@ -176,7 +176,7 @@ app.post('/login', async (req, res) => {
 });
 
 app.post('/register', async (req, res) => {
-    const { username, password, email, mobilenum } = req.body;
+    const { username, password, email, mobilenum,name } = req.body;
     const isActive = true;  // Assuming new users are active by default
     const role = 1;        // Default role
 
@@ -189,8 +189,8 @@ app.post('/register', async (req, res) => {
 
         // Insert new user
         const newUser = await pool.query(
-            'INSERT INTO users (username, password, email, isactive, mobilenum, role,name,description) VALUES ($1, $2, $3, $4, $5, $6,$1,$1) RETURNING *',
-            [username, password, email, isActive, mobilenum, role]
+            'INSERT INTO users (username, password, email, isactive, mobilenum, role,name,description) VALUES ($1, $2, $3, $4, $5, $6,$7,$1) RETURNING *',
+            [username, password, email, isActive, mobilenum, role,name]
         );
         res.status(201).json(newUser.rows[0]);
     } catch (error) {
@@ -213,7 +213,7 @@ app.post('/registerseller', async (req, res) => {
 
         // Insert new user
         const newUser = await pool.query(
-            'INSERT INTO users (username, password, email, isactive, mobilenum, role,name,description) VALUES ($1, $2, $3, $4, $5, $6,$8,$7) RETURNING *',
+            'INSERT INTO users (username, password, email, isactive, mobilenum, role,description,name) VALUES ($1, $2, $3, $4, $5, $6,$8,$7) RETURNING *',
             [username, password, email, isActive, mobilenum, role,description,name]
         );
         res.status(201).json(newUser.rows[0]);
@@ -320,6 +320,66 @@ app.delete('/users/:id', async (req, res) => {
         res.status(500).send('Error deleting user');
     }
 });
+//follow apis CRUD
+app.post('/follows', async (req, res) => {
+    const { sellerId, userId } = req.body;
+    try {
+        const newFollow = await pool.query(
+            'INSERT INTO follows (seller_id, user_id) VALUES ($1, $2) RETURNING *',
+            [sellerId, userId]
+        );
+        res.status(201).json(newFollow.rows[0]);
+    } catch (error) {
+        console.error('Error adding follow record:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+//Read follows
+app.get('/follows', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM follows');
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error('Error retrieving follow records:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+//get seler userids
+app.get('/follows/:sellerId', async (req, res) => {
+    const sellerId = parseInt(req.params.sellerId);
+    try {
+        const result = await pool.query('SELECT user_id FROM follows WHERE seller_id = $1', [sellerId]);
+        const userIds = result.rows.map(row => row.user_id);
+        res.status(200).json(userIds);
+    } catch (error) {
+        console.error('Error retrieving followers for seller:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+app.get('/follows/:userId', async (req, res) => {
+    const userId = parseInt(req.params.userId);
+    try {
+        const result = await pool.query('SELECT user_id FROM follows WHERE usee_id = $1', [userId]);
+        const userIds = result.rows.map(row => row.user_id);
+        res.status(200).json(userIds);
+    } catch (error) {
+        console.error('Error retrieving followers for seller:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.delete('/follows/:id', async (req, res) => {
+    const id = parseInt(req.params.id);
+    try {
+        await pool.query('DELETE FROM follows WHERE id = $1', [id]);
+        res.status(200).send(`Follow record deleted with ID: ${id}`);
+    } catch (error) {
+        console.error('Error deleting follow record:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
