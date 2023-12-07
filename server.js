@@ -338,7 +338,7 @@ app.post('/follows', async (req, res) => {
 app.get('/follows', async (req, res) => {
     let sellerId = req.query.sellerId
     let userId = req.query.userId
-    finalId = null;
+    let finalId = null;
     let query = null;
     if(sellerId!=null) {
         query = "SELECT user_id FROM follows WHERE seller_id = $1";
