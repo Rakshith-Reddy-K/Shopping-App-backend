@@ -349,7 +349,7 @@ app.get('/follows', async (req, res) => {
     }
     try {
         const result = await pool.query(query, [finalId]);
-        res.status(200).json(result.rows);
+        res.status(200).json(result);
     } catch (error) {
         console.error('Error retrieving follow records:', error);
         res.status(500).send('Internal Server Error');
