@@ -7,7 +7,25 @@ const cors = require('cors');
 const { is } = require('css-select');
 
 const app = express();
-app.use(cors());
+app.use(
+    cors({
+        credentials: false,
+        origin: '*'
+    })
+);
+
+const sessionOptions = {
+    secret: "any string",
+    resave: false,
+    saveUninitialized: false,
+};
+if (process.env.NODE_ENV !== "development") {
+    sessionOptions.proxy = true;
+    sessionOptions.cookie = {
+        sameSite: "none",
+        secure: true,
+    };
+}
 app.use(bodyParser.json());
 
 // PostgreSQL connection setup
